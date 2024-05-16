@@ -39,6 +39,10 @@ class ListingController extends Controller
     }
 
     public function update(ListingRequest $request, Listing $listing) {
+        if ($listing -> user_id != auth() -> id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $fields = $request->validated();
         if ($request -> hasFile('logo')) {
             $fields['logo'] = $request -> file('logo') -> store('logos', 'public');
@@ -48,6 +52,9 @@ class ListingController extends Controller
     }
 
     public function destroy(Listing $listing) {
+        if ($listing -> user_id != auth() -> id()) {
+            abort(403, 'Unauthorized action.');
+        }
         $listing -> delete();
         return redirect("/") -> with('message', 'Listing deleted!');
     }
